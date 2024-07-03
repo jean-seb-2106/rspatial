@@ -3,6 +3,7 @@ library(dplyr)
 library(mapview)
 library(recipes)
 library(janitor)
+library(ggplot2)
 
 # load("data/admin_express.RData")
 
@@ -53,10 +54,15 @@ adresses_bv_result_geo_bordeaux_clean <- adresses_bv_result_geo_bordeaux %>%
   mutate(across(starts_with("percent"), convert_to_numeric))
 
 #on stocke cet objet
+st_write(obj = adresses_bv_result_geo_bordeaux_clean, 
+         dsn = "bv_europe_bordeaux.gpkg")
 
 
-
-
+  ggplot() +
+  geom_sf(data = adresses_bv_result_geo_bordeaux_clean) +
+  geom_point(data = adresses_bv_result_geo_bordeaux_clean, aes(color = value), size = 3) +
+  scale_color_gradient(low = "blue", high = "red", name = "Valeur") +
+  labs(title = "Carte avec points colorés selon 'value'")
   
 
 
@@ -65,13 +71,6 @@ mapview(adresses_bv_geo_bordeaux,zcol = "voie_reu",legend=TRUE)
 
 
 
-map_sdg_indicators <- sdg_indicators_sf %>% 
-  filter(timeperiod == "2015") %>% 
-  ggplot() +
-  geom_sf(aes(fill = log(sh_sta_mmr)),color="white",size=.2)+
-  scale_fill_viridis_c()+
-  theme_minimal()+
-  theme(panel.background = element_rect(fill = "light blue"))
-map_sdg_indicators
+
 
 
